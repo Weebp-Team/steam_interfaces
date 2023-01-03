@@ -21,6 +21,7 @@ class SteamAPI(object):
     def _get(self, interface: str, method: str, version: int, params: dict) -> dict:
         """
         Send a GET request to the Steam API.
+
         :param interface: Steam API interface
         :type interface: str
         :param method: Steam API method
@@ -32,6 +33,7 @@ class SteamAPI(object):
         :return: Steam API response
         :rtype: dict
         """
+        # TODO: Make validation.
         url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
         params["key"] = self._key
         response = requests.get(url, params=params)
@@ -50,6 +52,7 @@ class IBroadcastService(SteamAPI):
                              frame_data: str) -> dict:
         """
         Add a game meta data frame to broadcast.
+
         :param app_id: Application ID
         :type app_id: int
         :param steam_id: Steam ID
@@ -73,7 +76,6 @@ class IBroadcastService(SteamAPI):
 class ICheatReportingService(SteamAPI):
     """This service allows your game to report cheats and cheaters
     to the VAC system and provides the toolset behind the Game Bans system."""
-    # TODO: Add more methods.
     def __init__(self, key: str) -> None:
         super().__init__(key)
 
@@ -92,11 +94,13 @@ class ICheatReportingService(SteamAPI):
                                ) -> dict:
         """
         Report a player for cheating.
+
         :param steam_id: Steam ID
         :type steam_id: int
         :param appid: Application ID
         :type appid: int
-        :param steam_id_reporter: (Optional) The Steam ID of the user or game server who is reporting the cheating.
+        :param steam_id_reporter: (Optional) The Steam ID of the user or game server who
+        is reporting the cheating.
         :type steam_id_reporter: int
         :param app_data: (Optional) App specific data about the type of cheating set by developer. (ex 1 = Aimbot, 2 = Wallhack, 3 = Griefing)
         :type app_data: int
@@ -143,6 +147,7 @@ class ICheatReportingService(SteamAPI):
                                 ) -> dict:
         """
         Requests a game ban on a specific player.
+
         :param steamid: Steam ID
         :type steamid: int
         :param appid: The appid of the game.
@@ -172,6 +177,149 @@ class ICheatReportingService(SteamAPI):
 
         return self._get("ICheatReportingService", "RequestPlayerGameBan", 1, params)
 
+    def remove_player_game_ban(self,
+                               steamid: int,
+                               appid: int) -> dict:
+        """
+        Remove a game ban on a player.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param appid: The appid of the game.
+        :type appid: int
+        """
+
+        params = {
+            "steamid": steamid,
+            "appid": appid
+        }
+        return self._get("ICheatReportingService", "RemovePlayerGameBan", 1, params)
+
+    def get_cheating_reports(self,
+                             appid: int,
+                             timeend: int,
+                             timebegin: int,
+                             reportidmin: int,
+                             includereports: bool,
+                             includebans: bool,
+                             steamid: int) -> dict:
+        """
+        Get a list of cheating reports submitted for this app.
+
+        :param appid: The appid of the game.
+        :type appid: int
+        :param timeend: The end of the time range to search for reports. (Unix epoch time)
+        :type timeend: int
+        :param timebegin: The start of the time range to search for reports. (Unix epoch time)
+        :type timebegin: int
+        :param reportidmin: The minimum reportid to return.
+        :type reportidmin: int
+        :param includereports: Include reports in the response.
+        :type includereports: bool
+        :param includebans: Include bans in the response.
+        :type includebans: bool
+        :param steamid: (Optional) Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "timeend": timeend,
+            "timebegin": timebegin,
+            "reportidmin": reportidmin,
+            "includereports": includereports,
+            "includebans": includebans,
+            "steamid": steamid
+        }
+
+        return self._get("ICheatReportingService", "GetCheatingReports", 1, params)
+
+    def report_cheat_data(self,
+                          steamid: int,
+                          appid: int,
+                          pathandfilename: str,
+                          webcheaturl: str,
+                          time_now: int,
+                          time_started: int,
+                          time_stopped: int,
+                          cheatname: str,
+                          game_process_id: int,
+                          cheat_process_id: int,
+                          cheat_param_1: int,
+                          cheat_param_2: int) -> dict:
+        """
+        Reports cheat data.
+        Only use on test account that is running the game but not in a multiplayer session.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param appid: The appid of the game.
+        :type appid: int
+        :param pathandfilename: Path and filename of the cheat.
+        :type pathandfilename: str
+        :param webcheaturl: URL of the cheat.
+        :type webcheaturl: str
+        :param time_now: The current time. (Unix epoch time)
+        :type time_now: int
+        :param time_started: The time the cheat started. (Unix epoch time)
+        :type time_started: int
+        :param time_stopped: The time the cheat stopped. (Unix epoch time)
+        :type time_stopped: int
+        :param cheatname: Descriptive name for the cheat.
+        :type cheatname: str
+        :param game_process_id: Process ID of the running game.
+        :type game_process_id: int
+        :param cheat_process_id: Process ID of the cheat process that ran.
+        :type cheat_process_id: int
+        :param cheat_param_1: Extra cheat data.
+        :type cheat_param_1: int
+        :param cheat_param_2: Extra cheat data.
+        :type cheat_param_2: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid,
+            "appid": appid,
+            "pathandfilename": pathandfilename,
+            "webcheaturl": webcheaturl,
+            "time_now": time_now,
+            "time_started": time_started,
+            "time_stopped": time_stopped,
+            "cheatname": cheatname,
+            "game_process_id": game_process_id,
+            "cheat_process_id": cheat_process_id,
+            "cheat_param_1": cheat_param_1,
+            "cheat_param_2": cheat_param_2
+        }
+
+        return self._get("ICheatReportingService", "ReportCheatData", 1, params)
+
+    def request_vac_status_for_user(self,
+                                    steamid: int,
+                                    appid: int,
+                                    session_id: int = None) -> dict:
+        """
+        Checks a user's VAC ban status and verifies a user's VAC session status.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param appid: The appid of the game.
+        :type appid: int
+        :param session_id: (Optional) Session ID
+        :type session_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid,
+            "appid": appid,
+            "session_id": session_id
+        }
+
+        return self._get("ICheatReportingService", "RequestVacStatusForUser", 1, params)
+
 
 class ISteamUser(SteamAPI):
     """Used to access information and interact with users."""
@@ -183,6 +331,7 @@ class ISteamUser(SteamAPI):
     def get_player_summaries(self, steam_ids: Union[List[int], int]) -> dict:
         """
         Get player summaries.
+
         :param steam_ids: Steam ID
         :type steam_ids: Union[List[int], int]
         :return: Steam API response
@@ -194,3 +343,186 @@ class ISteamUser(SteamAPI):
             "steamids": steam_ids
         }
         return self._get("ISteamUser", "GetPlayerSummaries", 2, params)
+
+    def check_app_ownership(self, steam_id: int, app_id: int) -> dict:
+        """
+        Check if a user owns a specific app.
+
+        :param steam_id: Steam ID
+        :type steam_id: int
+        :param app_id: App ID
+        :type app_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steam_id,
+            "appid": app_id
+        }
+
+        return self._get("ISteamUser", "CheckAppOwnership", 2, params)
+
+    def get_app_price_info(self,
+                           steamid: int,
+                           appids: Union[List[int], int],
+                           ) -> dict:
+        """
+        Get app price info.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param appids: App ID
+        :type appids: Union[List[int], int]
+        :return: Steam API response
+        """
+
+        if isinstance(appids, int):
+            appids = [appids]
+        appids = ",".join([str(appid) for appid in appids])
+
+        params = {
+            "steamid": steamid,
+            "appids": appids
+        }
+
+        return self._get("ISteamUser", "GetAppPriceInfo", 1, params)
+
+    def get_deleted_steam_ids(self,
+                              rowversion: int,
+                              ) -> dict:
+        """
+        You can use GetDeletedSteamIDs to retrieve a list of deleted accounts
+        that owned your game(s) before deletion.
+
+        :param rowversion: Row version
+        :type rowversion: int
+        :return: Steam API response
+        """
+
+        params = {
+            "rowversion": rowversion
+        }
+
+        return self._get("ISteamUser", "GetDeletedSteamIDs", 1, params)
+
+    def get_friends_list(self,
+                         steamid: int,
+                         relationship: str = None,
+                         ) -> dict:
+        """
+        Get friends list.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param relationship: Relationship
+        :type relationship: str
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid,
+            "relationship": relationship
+        }
+
+        return self._get("ISteamUser", "GetFriendList", 1, params)
+
+    def get_player_bans(self,
+                        steam_ids: Union[List[int], int],
+                        ) -> dict:
+        """
+        Get player bans.
+
+        :param steam_ids: Steam ID
+        :type steam_ids: Union[List[int], int]
+        :return: Steam API response
+        """
+
+        if isinstance(steam_ids, int):
+            steam_ids = [steam_ids]
+        steam_ids = ",".join([str(steam_id) for steam_id in steam_ids])
+
+        params = {
+            "steamids": steam_ids
+        }
+
+        return self._get("ISteamUser", "GetPlayerBans", 1, params)
+
+    def get_publisher_app_ownership(self,
+                                    steamid: int) -> dict:
+        """
+        Get publisher app ownership.
+        This method has previous versions which are no longer officially supported.
+        They will continue to be usable, but it's highly recommended that you use the latest version.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid
+        }
+
+        return self._get("ISteamUser", "GetPublisherAppOwnership", 3, params)
+
+    def get_publisher_app_ownership_changes(self,
+                                            packagerowversion: str,
+                                            cdkeyrowversion: str) -> dict:
+        """
+        This method can be used to determine what SteamIDs have ownership changes
+        starting from a particular package or key row version number.
+        From the list of SteamIDs returned, a call to GetPublisherAppOwnership can then
+        return the associated ownership data for the applications in the group associated with the key passed in.
+        A partner may wish to track this data in conjunction with linked Steam Accounts
+        to better understand the state of product ownership on Steam.
+
+        :param packagerowversion: The unsigned 64-bit row version to read package changes from.
+        The row version of data read up to will be returned for use in future calls.
+        :type packagerowversion: str
+        :param cdkeyrowversion: The unsigned 64-bit row version to read CD Key changes from.
+        The row version of data read up to will be returned for use in future calls.
+        :type cdkeyrowversion: str
+        """
+
+        params = {
+            "packagerowversion": packagerowversion,
+            "cdkeyrowversion": cdkeyrowversion
+        }
+
+        return self._get("ISteamUser", "GetPublisherAppOwnershipChanges", 1, params)
+
+    def get_user_group_list(self,
+                            steamid: int) -> dict:
+        """
+        Get user group list.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid
+        }
+
+        return self._get("ISteamUser", "GetUserGroupList", 1, params)
+
+    def resolve_vanity_url(self,
+                           vanityurl: str,
+                           url_type: int = 1) -> dict:
+        """
+        Resolve vanity URL.
+
+        :param vanityurl: The vanity URL to get a SteamID for
+        :type vanityurl: str
+        :param url_type: The type of vanity URL. 1 (default): Individual profile, 2: Group, 3: Official game group
+        :type url_type: int
+        :return: Steam API response
+        """
+
+        params = {
+            "vanityurl": vanityurl,
+            "url_type": url_type
+        }
+
+        return self._get("ISteamUser", "ResolveVanityURL", 1, params)
