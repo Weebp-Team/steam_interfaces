@@ -156,7 +156,8 @@ class ICheatReportingService(SteamAPI):
         :type reportid: int
         :param cheatdescription: Text describing cheating infraction.
         :type cheatdescription: str
-        :param duration: 	Ban duration requested in seconds. (duration 0 will issue infinite - less than a year is a suspension and not visible on profile)
+        :param duration: 	Ban duration requested in seconds.
+        (duration 0 will issue infinite - less than a year is a suspension and not visible on profile)
         :type duration: int
         :param delayban: Delay the ban according to default ban delay rules.
         :type delayban: bool
