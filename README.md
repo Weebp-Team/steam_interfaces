@@ -2,10 +2,10 @@
 
 Python library for working with the Steam API.
 
-## Installation
+## Installation (Not work now.)
 
 ```sh
-pip install steam_api
+pip install steam_api 
 ```
 
 ## Dependencies
