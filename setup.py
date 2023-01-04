@@ -7,13 +7,13 @@ from setuptools import setup
 :copyright: (c) 2022 Tarodictrl
 """
 
-version = '0.1.5'
+version = '0.1.6'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='steam_interfaces',
+    name='steam-interfaces',
     version=version,
 
     author='Tarodictrl',
@@ -31,7 +31,7 @@ setup(
 
     license='MIT License, see LICENSE file',
 
-    packages=['steam_interfaces'],
+    packages=['steam-interfaces'],
     install_requires=['requests'],
 
     classifiers=[
