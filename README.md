@@ -1,8 +1,8 @@
-# steam_api
+# steam_interfaces
 
 Python library for working with the Steam API.
 
-## Installation (Not work now.)
+## Installation
 
 ```sh
 pip install steam_interfaces 
