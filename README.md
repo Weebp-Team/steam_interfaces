@@ -10,7 +10,7 @@ Python library for working with the Steam API.
 ## Installation
 
 ```sh
-pip install steam-interfaces 
+pip install steam_interfaces 
 ```
 
 ## Usage
