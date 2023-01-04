@@ -31,7 +31,7 @@ class _SteamAPI(object):
         :return: Steam API response
         :rtype: dict
         """
-        # TODO: Make validation.
+
         url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
         params["key"] = self._key
         response = requests.get(url, params=params)
@@ -40,6 +40,29 @@ class _SteamAPI(object):
         elif response.status_code == 403:
             raise ValueError("Invalid API key")
 
+    def _post(self, interface: str, method: str, version: int, params: dict) -> dict:
+        """
+        Send a POST request to the Steam API.
+
+        :param interface: Steam API interface
+        :type interface: str
+        :param method: Steam API method
+        :type method: str
+        :param version: Steam API version
+        :type version: int
+        :param params: Steam API parameters
+        :type params: dict
+        :return: Steam API response
+        :rtype: dict
+        """
+
+        url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
+        params["key"] = self._key
+        response = requests.post(url, params=params)
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 403:
+            raise ValueError("Invalid API key")
 
 class IBroadcastService(_SteamAPI):
     """Provides access to Steam broadcasts."""
@@ -1223,4 +1246,106 @@ class ISteamWebAPIUtil(_SteamAPI):
     def get_supported_API_list(self):
         """ Returns a list of all supported API methods. """
         return self._get("ISteamWebAPIUtil", "GetSupportedAPIList", 1, {})
+
+
+class IEconMarketService(_SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_market_eligibility(self,
+                               steamid: int) -> dict:
+        """
+        Checks whether an account is allowed to use the market.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid
+        }
+
+        return self._get("IEconMarketService", "GetMarketEligibility", 1, params)
+
+    def cancel_app_listings_for_user(self,
+                                     appid: int,
+                                     steamid: int,
+                                     synchronous: bool
+                                     ) -> dict:
+        """
+        Cancels all of a user's listings for a specific app ID.
+
+        :param appid: Application ID
+        :type appid: int
+        :param steamid: The SteamID of the user whose listings should be canceled
+        :type steamid: int
+        :param synchronous: Whether to wait until all listings have been canceled before returning the response.
+        :type synchronous: bool
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "steamid": steamid,
+            "synchronous": synchronous
+        }
+
+        return self._post("IEconMarketService", "CancelAppListingsForUser", 1, params)
+
+    def get_asset_ID(self,
+                     appid: int,
+                     listingid: int,
+                     ) -> dict:
+        """
+        Returns the asset ID of the item sold in a listing.
+
+        :param appid: Application ID
+        :type appid: int
+        :param listingid: Listing ID
+        :type listingid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "listingid": listingid
+        }
+
+        return self._get("IEconMarketService", "GetAssetID", 1, params)
+
+    def get_popular(self,
+                    language: str,
+                    start: int,
+                    filter_appid: int,
+                    ecurrency: int,
+                    rows: int = None,
+                    ) -> dict:
+        """
+        Gets the most popular items.
+
+        :param language: The language to use in item descriptions
+        :type language: str
+        :param start: Number of rows per page
+        :type start: int
+        :param filter_appid: If present, the app ID to limit results to
+        :type filter_appid: int
+        :param ecurrency: If present, prices returned will be represented in this currency
+        :type ecurrency: int
+        :param rows: Rows to return
+        :type rows: int
+        :return: Steam API response
+        """
+
+        params = {
+            "language": language,
+            "start": start,
+            "filter_appid": filter_appid,
+            "ecurrency": ecurrency,
+            "rows": rows
+        }
+
+        return self._get("IEconMarketService", "GetPopular", 1, params)
+
+
 
