@@ -1455,8 +1455,8 @@ class ISiteLicenseService(_SteamAPI):
     def __init__(self, key: str):
         super().__init__(key)
 
-    def GetCurrentClientConnections(self,
-                                    siteid: int = None,
+    def get_current_client_connections(self,
+                                    siteid: int = 0,
                                     ):
         """
         See current activity at one or more sites.
@@ -1472,10 +1472,10 @@ class ISiteLicenseService(_SteamAPI):
 
         return self._get("ISiteLicenseService", "GetCurrentClientConnections", 1, params)
 
-    def GetTotalPlaytime(self,
+    def get_total_playtime(self,
                          start_time: str,
                          end_time: str,
-                         siteid: int = None):
+                         siteid: int = 0):
         """
         Get total playtime amounts for all games over a period of time; for one or all sites.
 
