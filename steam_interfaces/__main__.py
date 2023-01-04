@@ -38,7 +38,10 @@ class SteamAPI(object):
         url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
         params["key"] = self._key
         response = requests.get(url, params=params)
-        return response.json()
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 403:
+            raise ValueError("Invalid API key")
 
 
 class IBroadcastService(SteamAPI):
