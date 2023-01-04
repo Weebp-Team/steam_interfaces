@@ -989,3 +989,75 @@ class ISteamApps(_SteamAPI):
 
         return self._get("ISteamApps", "UpToDateCheck", 1, params)
 
+
+class ISteamNews(_SteamAPI):
+
+        def __init__(self, key: str):
+            super().__init__(key)
+
+        def get_news_for_app(self,
+                            appid: int,
+                            count: int = 20,
+                            maxlength: int = None,
+                            enddate: int = None,
+                            feeds: str = None,
+                            ) -> dict:
+            """
+            Gets news for an application.
+
+            :param appid: Application ID
+            :type appid: int
+            :param count: Number of news items to return
+            :type count: int
+            :param maxlength: Maximum length of the news item
+            :type maxlength: int
+            :param enddate: Unix timestamp of the last news item to return
+            :type enddate: int
+            :param feeds: Comma separated list of feed names to return news for
+            :type feeds: str
+            :return: Steam API response
+            """
+
+            params = {
+                "appid": appid,
+                "count": count,
+                "maxlength": maxlength,
+                "enddate": enddate,
+                "feeds": feeds
+            }
+
+            return self._get("ISteamNews", "GetNewsForApp", 2, params)
+
+        def get_news_from_app_authed(self,
+                                     appid: int,
+                                     maxlength: int = 0,
+                                     enddate: int = None,
+                                     count: int = 20,
+                                     feeds: str = None,
+                                     ) -> dict:
+            """
+            Get the news for the specified app.
+            Publisher only version that can return info for unreleased games.
+
+            :param appid: Application ID
+            :type appid: int
+            :param maxlength: Maximum length of the news item
+            :type maxlength: int
+            :param enddate: Unix timestamp of the last news item to return
+            :type enddate: int
+            :param count: Number of news items to return
+            :type count: int
+            :param feeds: Comma separated list of feed names to return news for
+            :type feeds: str
+            :return: Steam API response
+            """
+
+            params = {
+                "appid": appid,
+                "maxlength": maxlength,
+                "enddate": enddate,
+                "count": count,
+                "feeds": feeds
+            }
+
+            return self._get("ISteamNews", "GetNewsForApp", 2, params)
