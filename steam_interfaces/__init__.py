@@ -13,4 +13,4 @@ from .__main__ import \
 __author__ = "Tarodictrl"
 __version__ = "0.0.1"
 __license__ = "MIT License"
-__email__ = "detter@gorealytics.com"
+__email__ = "vudi600@gmail.com"

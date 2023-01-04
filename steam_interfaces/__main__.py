@@ -9,6 +9,7 @@ from typing import List, Union
 
 class SteamAPI(object):
     """Class for interacting with the Steam API."""
+
     # TODO: Make validation for the API key.
 
     def __init__(self, key: str) -> None:
@@ -76,6 +77,7 @@ class IBroadcastService(SteamAPI):
 class ICheatReportingService(SteamAPI):
     """This service allows your game to report cheats and cheaters
     to the VAC system and provides the toolset behind the Game Bans system."""
+
     def __init__(self, key: str) -> None:
         super().__init__(key)
 
@@ -527,3 +529,150 @@ class ISteamUser(SteamAPI):
         }
 
         return self._get("ISteamUser", "ResolveVanityURL", 1, params)
+
+
+class IDOTAChat_570(SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_channel_members(self,
+                            channel_type: int,
+                            channel_name: int
+                            ) -> dict:
+        """
+        Get channel members.
+
+        :param channel_type: Channel type
+        :type channel_type: int
+        :param channel_name: Channel name
+        :type channel_name: int
+        :return: Steam API response
+        """
+
+        params = {
+            "channel_type": channel_type,
+            "channel_name": channel_name
+        }
+
+        return self._get("IDOTAChat_570", "GetChannelMembers", 1, params)
+
+
+class IDOTA2MatchStats_570(SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_realtime_stats(self,
+                           server_steam_id: int,
+                           ) -> dict:
+        """
+        Get match stats.
+
+        :param server_steam_id: Server Steam ID
+        :type server_steam_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "server_steam_id": server_steam_id
+        }
+
+        return self._get("IDOTA2MatchStats_570", "GetMatchStats", 1, params)
+
+
+class IDOTA2Fantasy_570(SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_fantasy_player_raw_stats(self,
+                                     account_id: int,
+                                     leagueid: int,
+                                     StartTime: int,
+                                     EndTime: int,
+                                     ) -> dict:
+        """
+        Get fantasy player raw stats.
+
+        :param account_id: Account ID
+        :type account_id: int
+        :param leagueid: League ID
+        :type leagueid: int
+        :param StartTime: Start time
+        :type StartTime: int
+        :param EndTime: End time
+        :type EndTime: int
+        :return: Steam API response
+        """
+
+        params = {
+            "account_id": account_id,
+            "leagueid": leagueid,
+            "StartTime": StartTime,
+            "EndTime": EndTime
+        }
+
+        return self._get("IDOTA2Fantasy_570", "GetFantasyPlayerRawStats", 1, params)
+
+    def get_player_info(self,
+                        account_id: int,
+                        ) -> dict:
+        """
+        Get player info.
+
+        :param account_id: Account ID
+        :type account_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "account_id": account_id
+        }
+
+        return self._get("IDOTA2Fantasy_570", "GetPlayerInfo", 1, params)
+
+    def get_player_infos(self,
+                         account_ids: Union[List[int], int],
+                         ) -> dict:
+        """
+        Get player infos.
+
+        :param account_ids: Account IDs
+        :type account_ids: Union[List[int], int]
+        :return: Steam API response
+        """
+
+        if isinstance(account_ids, int):
+            account_ids = [account_ids]
+        account_ids = ",".join([str(account_id) for account_id in account_ids])
+
+        params = {
+            "account_ids": account_ids
+        }
+
+        return self._get("IDOTA2Fantasy_570", "GetPlayerInfos", 1, params)
+
+
+class IDOTA2StreamSystem_205790(SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_broadcaster_info(self,
+                             broadcaster_steam_id: int,
+                             league_id: int = None
+                             ) -> dict:
+
+        """
+        Get broadcaster info.
+
+        :param broadcaster_steam_id: Broadcaster Steam ID
+        :type broadcaster_steam_id: int
+        :param league_id: League ID
+        :type league_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "broadcaster_steam_id": broadcaster_steam_id,
+            "league_id": league_id
+        }
+
+        return self._get("IDOTA2StreamSystem_205790", "GetBroadcasterInfo", 1, params)
