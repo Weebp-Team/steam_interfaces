@@ -20,8 +20,7 @@ setup(
     author_email='vudi600@gmail.com',
 
     description=(
-        u'Python module for writing scripts for project management platform '
-        u'Steam'
+        u'Python library for working with the Steam API.'
     ),
     long_description=long_description,
     long_description_content_type='text/markdown',
