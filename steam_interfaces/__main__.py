@@ -991,73 +991,181 @@ class ISteamApps(_SteamAPI):
 
 
 class ISteamNews(_SteamAPI):
-
-        def __init__(self, key: str):
+    def __init__(self, key: str):
             super().__init__(key)
 
-        def get_news_for_app(self,
-                            appid: int,
-                            count: int = 20,
-                            maxlength: int = None,
-                            enddate: int = None,
-                            feeds: str = None,
-                            ) -> dict:
-            """
-            Gets news for an application.
+    def get_news_for_app(self,
+                        appid: int,
+                        count: int = 20,
+                        maxlength: int = None,
+                        enddate: int = None,
+                        feeds: str = None,
+                        ) -> dict:
+        """
+        Gets news for an application.
 
-            :param appid: Application ID
-            :type appid: int
-            :param count: Number of news items to return
-            :type count: int
-            :param maxlength: Maximum length of the news item
-            :type maxlength: int
-            :param enddate: Unix timestamp of the last news item to return
-            :type enddate: int
-            :param feeds: Comma separated list of feed names to return news for
-            :type feeds: str
-            :return: Steam API response
-            """
+        :param appid: Application ID
+        :type appid: int
+        :param count: Number of news items to return
+        :type count: int
+        :param maxlength: Maximum length of the news item
+        :type maxlength: int
+        :param enddate: Unix timestamp of the last news item to return
+        :type enddate: int
+        :param feeds: Comma separated list of feed names to return news for
+        :type feeds: str
+        :return: Steam API response
+        """
 
-            params = {
-                "appid": appid,
-                "count": count,
-                "maxlength": maxlength,
-                "enddate": enddate,
-                "feeds": feeds
-            }
+        params = {
+            "appid": appid,
+            "count": count,
+            "maxlength": maxlength,
+            "enddate": enddate,
+            "feeds": feeds
+        }
 
-            return self._get("ISteamNews", "GetNewsForApp", 2, params)
+        return self._get("ISteamNews", "GetNewsForApp", 2, params)
 
-        def get_news_from_app_authed(self,
-                                     appid: int,
-                                     maxlength: int = 0,
-                                     enddate: int = None,
-                                     count: int = 20,
-                                     feeds: str = None,
-                                     ) -> dict:
-            """
-            Get the news for the specified app.
-            Publisher only version that can return info for unreleased games.
+    def get_news_from_app_authed(self,
+                                 appid: int,
+                                 maxlength: int = 0,
+                                 enddate: int = None,
+                                 count: int = 20,
+                                 feeds: str = None,
+                                 ) -> dict:
+        """
+        Get the news for the specified app.
+        Publisher only version that can return info for unreleased games.
 
-            :param appid: Application ID
-            :type appid: int
-            :param maxlength: Maximum length of the news item
-            :type maxlength: int
-            :param enddate: Unix timestamp of the last news item to return
-            :type enddate: int
-            :param count: Number of news items to return
-            :type count: int
-            :param feeds: Comma separated list of feed names to return news for
-            :type feeds: str
-            :return: Steam API response
-            """
+        :param appid: Application ID
+        :type appid: int
+        :param maxlength: Maximum length of the news item
+        :type maxlength: int
+        :param enddate: Unix timestamp of the last news item to return
+        :type enddate: int
+        :param count: Number of news items to return
+        :type count: int
+        :param feeds: Comma separated list of feed names to return news for
+        :type feeds: str
+        :return: Steam API response
+        """
 
-            params = {
-                "appid": appid,
-                "maxlength": maxlength,
-                "enddate": enddate,
-                "count": count,
-                "feeds": feeds
-            }
+        params = {
+            "appid": appid,
+            "maxlength": maxlength,
+            "enddate": enddate,
+            "count": count,
+            "feeds": feeds
+        }
 
-            return self._get("ISteamNews", "GetNewsForApp", 2, params)
+        return self._get("ISteamNews", "GetNewsForApp", 2, params)
+
+
+class IWorkshopService(_SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def set_item_payment_rules(self,
+                               appid: int,
+                               gameitemid: int,
+                               associated_workshop_files: list,
+                               partner_accounts: list,
+                               make_workshop_files_subscribable: bool,
+                               validate_only: bool = False
+                               ) -> dict:
+        """
+        Sets the payment rules for a specific item.
+
+        :param appid: Application ID
+        :type appid: int
+        :param gameitemid: Game item ID
+        :type gameitemid: int
+        :param associated_workshop_files: List of associated workshop files
+        :type associated_workshop_files: list
+        :param partner_accounts: List of partner accounts
+        :type partner_accounts: list
+        :param make_workshop_files_subscribable: Allow users to subscribe to the workshop items?
+        :type make_workshop_files_subscribable: bool
+        :param validate_only: Only validates the rules and does not persist them.
+        :type validate_only: bool
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "gameitemid": gameitemid,
+            "associated_workshop_files": associated_workshop_files,
+            "partner_accounts": partner_accounts,
+            "make_workshop_files_subscribable": make_workshop_files_subscribable,
+            "validate_only": validate_only
+        }
+
+        return self._get("IWorkshopService", "SetItemPaymentRules", 1, params)
+
+    def get_finalized_contributors(self,
+                                   appid: int,
+                                   gameitemid: int,
+                                   ) -> dict:
+        """
+        Get a list of contributors for a specific app/workshop item combination.
+
+        :param appid: Application ID
+        :type appid: int
+        :param gameitemid: Game item ID
+        :type gameitemid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "gameitemid": gameitemid
+        }
+
+        return self._get("IWorkshopService", "GetFinalizedContributors", 1, params)
+
+    def get_item_daily_revenue(self,
+                               item_id: int,
+                               date_start: int,
+                               date_end: int,
+                               ) -> dict:
+        """
+        Gets the daily revenue for a specific item.
+
+        :param item_id: Item ID
+        :type item_id: int
+        :param date_start: Start date
+        :type date_start: int
+        :param date_end: End date
+        :type date_end: int
+        :return: Steam API response
+        """
+
+        params = {
+            "item_id": item_id,
+            "date_start": date_start,
+            "date_end": date_end
+        }
+
+        return self._get("IWorkshopService", "GetItemDailyRevenue", 1, params)
+
+    def populate_item_descriptions(self,
+                                   appid: int,
+                                   languages: list,
+                                   ) -> dict:
+        """
+        Populate block of item descriptions.
+
+        :param appid: Application ID
+        :type appid: int
+        :param languages: List of languages
+        :type languages: list
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "languages": languages
+        }
+
+        return self._get("IWorkshopService", "PopulateItemDescriptions", 1, params)

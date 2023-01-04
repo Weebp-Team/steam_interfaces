@@ -36,6 +36,7 @@ user_info = steam_user.get_player_summaries(76561198248393810)
 - IPlayerService
 - ISteamApps
 - ISteamNews
+- IWorkshopService
 
 ## Dependencies
 
