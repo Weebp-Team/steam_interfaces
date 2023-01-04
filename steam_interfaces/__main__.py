@@ -9,9 +9,6 @@ from typing import List, Union
 
 class _SteamAPI(object):
     """Class for interacting with the Steam API."""
-
-    # TODO: Make validation for the API key.
-
     def __init__(self, key: str) -> None:
         """
         :param key: Steam API key
@@ -333,8 +330,6 @@ class ICheatReportingService(_SteamAPI):
 
 class ISteamUser(_SteamAPI):
     """Used to access information and interact with users."""
-
-    # TODO: Add more methods.
     def __init__(self, key: str) -> None:
         super().__init__(key)
 
@@ -539,6 +534,7 @@ class ISteamUser(_SteamAPI):
 
 
 class IDOTAChat_570(_SteamAPI):
+    """Dota 2 Match chat API."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -565,6 +561,7 @@ class IDOTAChat_570(_SteamAPI):
 
 
 class IDOTA2MatchStats_570(_SteamAPI):
+    """Dota 2 Match Stats API."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -587,6 +584,7 @@ class IDOTA2MatchStats_570(_SteamAPI):
 
 
 class IDOTA2Fantasy_570(_SteamAPI):
+    """Dota 2 fantasy API."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -659,6 +657,7 @@ class IDOTA2Fantasy_570(_SteamAPI):
 
 
 class IDOTA2StreamSystem_205790(_SteamAPI):
+    """Dota 2 Stream System API."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -686,6 +685,7 @@ class IDOTA2StreamSystem_205790(_SteamAPI):
 
 
 class IPlayerService(_SteamAPI):
+    """Provides additional methods for interacting with Steam Users."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -801,7 +801,7 @@ class IPlayerService(_SteamAPI):
 
 
 class ISteamApps(_SteamAPI):
-
+    """Used to access data about applications on Steam."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -991,6 +991,7 @@ class ISteamApps(_SteamAPI):
 
 
 class ISteamNews(_SteamAPI):
+    """Provides access to the Steam News functionality. """
     def __init__(self, key: str):
             super().__init__(key)
 
@@ -1063,6 +1064,7 @@ class ISteamNews(_SteamAPI):
 
 
 class IWorkshopService(_SteamAPI):
+    """Additional Steam Workshop service methods for publishers."""
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1169,3 +1171,43 @@ class IWorkshopService(_SteamAPI):
         }
 
         return self._get("IWorkshopService", "PopulateItemDescriptions", 1, params)
+
+
+class ISteamGameServerStats(_SteamAPI):
+    """Interface to get and interact with game server stats."""
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_game_server_player_stats_for_game(self,
+                                              gameid: int,
+                                              appid: int,
+                                              rangestart: int,
+                                              rangeend: int,
+                                              maxresults: int = 1000,
+                                              ) -> dict:
+        """
+        Gets the game server player stats for a specific game.
+
+        :param gameid: Game ID
+        :type gameid: int
+        :param appid: Application ID
+        :type appid: int
+        :param rangestart: Start of the range
+        :type rangestart: int
+        :param rangeend: End of the range
+        :type rangeend: int
+        :param maxresults: Maximum results to return
+        :type maxresults: int
+        :return: Steam API response
+        """
+
+        params = {
+            "gameid": gameid,
+            "appid": appid,
+            "rangestart": rangestart,
+            "rangeend": rangeend,
+            "maxresults": maxresults
+        }
+
+        return self._get("ISteamGameServerStats", "GetGameServerPlayerStatsForGame", 1, params)
+
