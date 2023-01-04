@@ -1444,3 +1444,54 @@ class ILobbyMatchmakingService(_SteamAPI):
         }
 
         return self._get("ILobbyMatchmakingService", "GetLobbyData", 1, params)
+
+
+class ISiteLicenseService(_SteamAPI):
+    """
+    Provides access to services related
+    to operating sites which are part of the
+    Steam PC Cafe program.
+    """
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def GetCurrentClientConnections(self,
+                                    siteid: int = None,
+                                    ):
+        """
+        See current activity at one or more sites.
+
+        :param siteid: Site ID to see; zero for all sites
+        :type siteid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "siteid": siteid
+        }
+
+        return self._get("ISiteLicenseService", "GetCurrentClientConnections", 1, params)
+
+    def GetTotalPlaytime(self,
+                         start_time: str,
+                         end_time: str,
+                         siteid: int = None):
+        """
+        Get total playtime amounts for all games over a period of time; for one or all sites.
+
+        :param start_time: Report activity starting on or after this time. RFC 3339 UTC format.
+        :type start_time: str
+        :param end_time: Report activity starting before this time. RFC 3339 UTC format.
+        :type end_time: str
+        :param siteid: Site ID to see; zero for all sites
+        :type siteid: int
+        :return: Steam API response
+        """
+
+        param = {
+            "start_time": start_time,
+            "end_time": end_time,
+            "siteid": siteid
+        }
+
+        return self._get("ISiteLicenseService", "GetTotalPlaytime", 1, param)
