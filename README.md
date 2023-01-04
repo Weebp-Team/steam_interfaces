@@ -1,4 +1,4 @@
-# steam_interfaces
+# steam-interfaces
 ![PyPI](https://img.shields.io/pypi/v/steam_interfaces?color=orange) ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Weebp-Team/steam_interfaces?color=blueviolet) ![License](https://img.shields.io/pypi/l/steam_interfaces?color=blueviolet) ![Forks](https://img.shields.io/github/forks/Weebp-team/steam_interfaces?style=social)
 
 Python library for working with the Steam API.
@@ -33,6 +33,8 @@ user_info = steam_user.get_player_summaries(76561198248393810)
 - IDOTA2MatchStats_570
 - IDOTA2Fantasy_570
 - IDOTA2StreamSystem_205790
+- IPlayerService
+- ISteamApps
 
 ## Dependencies
 

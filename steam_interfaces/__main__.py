@@ -7,7 +7,7 @@ import requests
 from typing import List, Union
 
 
-class SteamAPI(object):
+class _SteamAPI(object):
     """Class for interacting with the Steam API."""
 
     # TODO: Make validation for the API key.
@@ -44,7 +44,7 @@ class SteamAPI(object):
             raise ValueError("Invalid API key")
 
 
-class IBroadcastService(SteamAPI):
+class IBroadcastService(_SteamAPI):
     """Provides access to Steam broadcasts."""
 
     def __init__(self, key: str) -> None:
@@ -77,7 +77,7 @@ class IBroadcastService(SteamAPI):
         return self._get("IBroadcastService", "PostGameDataFrame", 1, params)
 
 
-class ICheatReportingService(SteamAPI):
+class ICheatReportingService(_SteamAPI):
     """This service allows your game to report cheats and cheaters
     to the VAC system and provides the toolset behind the Game Bans system."""
 
@@ -107,7 +107,8 @@ class ICheatReportingService(SteamAPI):
         :param steam_id_reporter: (Optional) The Steam ID of the user or game server who
         is reporting the cheating.
         :type steam_id_reporter: int
-        :param app_data: (Optional) App specific data about the type of cheating set by developer. (ex 1 = Aimbot, 2 = Wallhack, 3 = Griefing)
+        :param app_data: (Optional) App specific data about the type of cheating set by developer.
+        (ex 1 = Aimbot, 2 = Wallhack, 3 = Griefing)
         :type app_data: int
         :param heuristic: (Optional) Extra information about the source of the cheating - was it a heuristic.
         :type heuristic: bool
@@ -115,11 +116,14 @@ class ICheatReportingService(SteamAPI):
         :type detection: bool
         :param player_report: (Optional) Extra information about the source of the cheating - was it a player report.
         :type player_report: bool
-        :param no_report_id: (Optional) Don't return reportid. This should only be passed if you don't intend to issue a ban based on this report.
+        :param no_report_id: (Optional) Don't return reportid.
+        This should only be passed if you don't intend to issue a ban based on this report.
         :type no_report_id: bool
-        :param game_mode: (Optional) Extra information about state of game - was it a specific type of game play or game mode. (0 = generic).
+        :param game_mode: (Optional) Extra information about state of game - was it a specific
+        type of game play or game mode. (0 = generic).
         :type game_mode: int
-        :param suspicion_start_time: (Optional) Extra information indicating how far back the game thinks is interesting for this user. Unix epoch time (time since Jan 1st, 1970).
+        :param suspicion_start_time: (Optional) Extra information indicating how far back the game thinks
+        is interesting for this user. Unix epoch time (time since Jan 1st, 1970).
         :type suspicion_start_time: int
         :param severity: (Optional) Level of severity of bad action being reported. Scale set by developer.
         :type severity: int
@@ -327,7 +331,7 @@ class ICheatReportingService(SteamAPI):
         return self._get("ICheatReportingService", "RequestVacStatusForUser", 1, params)
 
 
-class ISteamUser(SteamAPI):
+class ISteamUser(_SteamAPI):
     """Used to access information and interact with users."""
 
     # TODO: Add more methods.
@@ -534,7 +538,7 @@ class ISteamUser(SteamAPI):
         return self._get("ISteamUser", "ResolveVanityURL", 1, params)
 
 
-class IDOTAChat_570(SteamAPI):
+class IDOTAChat_570(_SteamAPI):
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -560,7 +564,7 @@ class IDOTAChat_570(SteamAPI):
         return self._get("IDOTAChat_570", "GetChannelMembers", 1, params)
 
 
-class IDOTA2MatchStats_570(SteamAPI):
+class IDOTA2MatchStats_570(_SteamAPI):
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -582,7 +586,7 @@ class IDOTA2MatchStats_570(SteamAPI):
         return self._get("IDOTA2MatchStats_570", "GetMatchStats", 1, params)
 
 
-class IDOTA2Fantasy_570(SteamAPI):
+class IDOTA2Fantasy_570(_SteamAPI):
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -654,7 +658,7 @@ class IDOTA2Fantasy_570(SteamAPI):
         return self._get("IDOTA2Fantasy_570", "GetPlayerInfos", 1, params)
 
 
-class IDOTA2StreamSystem_205790(SteamAPI):
+class IDOTA2StreamSystem_205790(_SteamAPI):
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -679,3 +683,309 @@ class IDOTA2StreamSystem_205790(SteamAPI):
         }
 
         return self._get("IDOTA2StreamSystem_205790", "GetBroadcasterInfo", 1, params)
+
+
+class IPlayerService(_SteamAPI):
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_recently_played_games(self,
+                                  steamid: int,
+                                  count: int = 0
+                                  ) -> dict:
+        """
+        Get recently played games.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param count: Number of games to return
+        :type count: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid,
+            "count": count
+        }
+
+        return self._get("IPlayerService", "GetRecentlyPlayedGames", 1, params)
+
+    def get_owned_games(self,
+                        steamid: int,
+                        include_appinfo: int = 0,
+                        include_played_free_games: int = 0,
+                        appids_filter: Union[List[int], int] = None
+                        ) -> dict:
+        """
+        Get owned games.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param include_appinfo: Include app info
+        :type include_appinfo: int
+        :param include_played_free_games: Include played free games
+        :type include_played_free_games: int
+        :param appids_filter: App IDs filter
+        :type appids_filter: Union[List[int], int]
+        :return: Steam API response
+        """
+
+        if isinstance(appids_filter, int):
+            appids_filter = [appids_filter]
+        if appids_filter:
+            appids_filter = ",".join([str(appid) for appid in appids_filter])
+
+        params = {
+            "steamid": steamid,
+            "include_appinfo": include_appinfo,
+            "include_played_free_games": include_played_free_games,
+            "appids_filter": appids_filter
+        }
+
+        return self._get("IPlayerService", "GetOwnedGames", 1, params)
+
+    def get_steam_level(self,
+                        steamid: int,
+                        ) -> dict:
+        """
+        Get Steam level.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid
+        }
+
+        return self._get("IPlayerService", "GetSteamLevel", 1, params)
+
+    def get_badges(self,
+                   steamid: int,
+                   ) -> dict:
+        """
+        Get badges.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid
+        }
+
+        return self._get("IPlayerService", "GetBadges", 1, params)
+
+    def get_community_badge_progress(self,
+                                     steamid: int,
+                                     badgeid: int,
+                                     ) -> dict:
+        """
+        Get community badge progress.
+
+        :param steamid: Steam ID
+        :type steamid: int
+        :param badgeid: Badge ID
+        :type badgeid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamid": steamid,
+            "badgeid": badgeid
+        }
+
+        return self._get("IPlayerService", "GetCommunityBadgeProgress", 1, params)
+
+
+class ISteamApps(_SteamAPI):
+
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def get_app_betas(self,
+                      appid: int) -> dict:
+        """
+        Gets all the beta branches for the specified application.
+
+        :param appid: Application ID
+        :type appid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid
+        }
+
+        return self._get("ISteamApps", "GetAppBeta", 1, params)
+
+    def get_app_builds(self,
+                       appid: int,
+                       count: int = 10,
+                       ) -> dict:
+        """
+        Gets an applications build history.
+
+        :param appid: Application ID
+        :type appid: int
+        :param count: Number of builds to return
+        :type count: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "count": count
+        }
+
+        return self._get("ISteamApps", "GetAppBuilds", 1, params)
+
+    def get_app_depot_versions(self,
+                               appid: int,
+                               ) -> dict:
+        """
+        Gets an applications depot versions.
+
+        :param appid: Application ID
+        :type appid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid
+        }
+
+        return self._get("ISteamApps", "GetAppDepotVersions", 1, params)
+
+    def get_app_list(self) -> dict:
+        """
+        Gets a list of all applications.
+
+        :return: Steam API response
+        """
+
+        return self._get("ISteamApps", "GetAppList", 1, {})
+
+    def get_partner_app_list_for_web_API_Key(self,
+                                             type_filter: str = None,
+                                             ) -> dict:
+        """
+        Get a list of appIDs associated with a WebAPI key.
+
+        :param type_filter: Type filter
+        :type type_filter: str
+        :return: Steam API response
+        """
+
+        params = {
+            "type_filter": type_filter
+        }
+
+        return self._get("ISteamApps", "GetPartnerAppListForWebAPIKey", 1, params)
+
+    def get_players_banned(self,
+                           appid: int) -> dict:
+        """
+        Gets a list of banned players.
+
+        :param appid: Application ID
+        :type appid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid
+        }
+
+        return self._get("ISteamApps", "GetPlayersBanned", 1, params)
+
+    def get_server_list(self,
+                        filter: str = None,
+                        limit: int = None,
+                        ) -> dict:
+        """
+        Gets a list of servers.
+
+        :param filter: Query filter string
+        :type filter: str
+        :param limit: Limit number of servers in the response
+        :type limit: int
+        :return: Steam API response
+        """
+
+        params = {
+            "filter": filter,
+            "limit": limit
+        }
+
+        return self._get("ISteamApps", "GetServersAtAddress", 1, params)
+
+    def get_servers_at_address(self,
+                               addr: str,
+                               ) -> dict:
+        """
+        Gets a list of servers at an address.
+
+        :param addr: Address
+        :type addr: str
+        :return: Steam API response
+        """
+
+        params = {
+            "addr": addr
+        }
+
+        return self._get("ISteamApps", "GetServersAtAddress", 1, params)
+
+    def set_app_build_live(self,
+                           appid: int,
+                           buildid: int,
+                           betakey: str,
+                           description: str = None
+                           ) -> dict:
+        """
+        Sets an applications build as live.
+
+        :param appid: Application ID
+        :type appid: int
+        :param buildid: Build ID
+        :type buildid: int
+        :param betakey: beta key, required. Use public for default branch
+        :type betakey: str
+        :param description: optional description for this build
+        :type description: str
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "buildid": buildid,
+            "betakey": betakey,
+            "description": description
+        }
+
+        return self._get("ISteamApps", "SetAppBuildLive", 1, params)
+
+    def up_to_date_check(self,
+                         appid: int,
+                         version: int,
+                         ) -> dict:
+        """
+        Checks if an application is up-to-date.
+
+        :param appid: Application ID
+        :type appid: int
+        :param version: The installed version of the game
+        :type version: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "version": version
+        }
+
+        return self._get("ISteamApps", "UpToDateCheck", 1, params)
+
