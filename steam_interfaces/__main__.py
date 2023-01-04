@@ -64,6 +64,7 @@ class _SteamAPI(object):
         elif response.status_code == 403:
             raise ValueError("Invalid API key")
 
+
 class IBroadcastService(_SteamAPI):
     """Provides access to Steam broadcasts."""
 
@@ -94,7 +95,7 @@ class IBroadcastService(_SteamAPI):
             "framedata": frame_data
         }
 
-        return self._get("IBroadcastService", "PostGameDataFrame", 1, params)
+        return self._post("IBroadcastService", "PostGameDataFrame", 1, params)
 
 
 class ICheatReportingService(_SteamAPI):
@@ -163,7 +164,7 @@ class ICheatReportingService(_SteamAPI):
             "severity": severity
         }
 
-        return self._get("ICheatReportingService", "ReportPlayerCheating", 1, params)
+        return self._post("ICheatReportingService", "ReportPlayerCheating", 1, params)
 
     def request_player_game_ban(self,
                                 steamid: int,
@@ -205,7 +206,7 @@ class ICheatReportingService(_SteamAPI):
             "flags": flags
         }
 
-        return self._get("ICheatReportingService", "RequestPlayerGameBan", 1, params)
+        return self._post("ICheatReportingService", "RequestPlayerGameBan", 1, params)
 
     def remove_player_game_ban(self,
                                steamid: int,
@@ -223,7 +224,7 @@ class ICheatReportingService(_SteamAPI):
             "steamid": steamid,
             "appid": appid
         }
-        return self._get("ICheatReportingService", "RemovePlayerGameBan", 1, params)
+        return self._post("ICheatReportingService", "RemovePlayerGameBan", 1, params)
 
     def get_cheating_reports(self,
                              appid: int,
@@ -324,7 +325,7 @@ class ICheatReportingService(_SteamAPI):
             "cheat_param_2": cheat_param_2
         }
 
-        return self._get("ICheatReportingService", "ReportCheatData", 1, params)
+        return self._post("ICheatReportingService", "ReportCheatData", 1, params)
 
     def request_vac_status_for_user(self,
                                     steamid: int,
@@ -348,7 +349,7 @@ class ICheatReportingService(_SteamAPI):
             "session_id": session_id
         }
 
-        return self._get("ICheatReportingService", "RequestVacStatusForUser", 1, params)
+        return self._post("ICheatReportingService", "RequestVacStatusForUser", 1, params)
 
 
 class ISteamUser(_SteamAPI):
@@ -989,7 +990,7 @@ class ISteamApps(_SteamAPI):
             "description": description
         }
 
-        return self._get("ISteamApps", "SetAppBuildLive", 1, params)
+        return self._post("ISteamApps", "SetAppBuildLive", 1, params)
 
     def up_to_date_check(self,
                          appid: int,
@@ -1094,8 +1095,8 @@ class IWorkshopService(_SteamAPI):
     def set_item_payment_rules(self,
                                appid: int,
                                gameitemid: int,
-                               associated_workshop_files: list,
-                               partner_accounts: list,
+                               associated_workshop_files: dict,
+                               partner_accounts: dict,
                                make_workshop_files_subscribable: bool,
                                validate_only: bool = False
                                ) -> dict:
@@ -1106,10 +1107,10 @@ class IWorkshopService(_SteamAPI):
         :type appid: int
         :param gameitemid: Game item ID
         :type gameitemid: int
-        :param associated_workshop_files: List of associated workshop files
-        :type associated_workshop_files: list
-        :param partner_accounts: List of partner accounts
-        :type partner_accounts: list
+        :param associated_workshop_files: Dict of associated workshop files
+        :type associated_workshop_files: dict
+        :param partner_accounts: Dict of partner accounts
+        :type partner_accounts: dict
         :param make_workshop_files_subscribable: Allow users to subscribe to the workshop items?
         :type make_workshop_files_subscribable: bool
         :param validate_only: Only validates the rules and does not persist them.
@@ -1126,7 +1127,7 @@ class IWorkshopService(_SteamAPI):
             "validate_only": validate_only
         }
 
-        return self._get("IWorkshopService", "SetItemPaymentRules", 1, params)
+        return self._post("IWorkshopService", "SetItemPaymentRules", 1, params)
 
     def get_finalized_contributors(self,
                                    appid: int,
@@ -1193,7 +1194,7 @@ class IWorkshopService(_SteamAPI):
             "languages": languages
         }
 
-        return self._get("IWorkshopService", "PopulateItemDescriptions", 1, params)
+        return self._post("IWorkshopService", "PopulateItemDescriptions", 1, params)
 
 
 class ISteamGameServerStats(_SteamAPI):
@@ -1348,4 +1349,98 @@ class IEconMarketService(_SteamAPI):
         return self._get("IEconMarketService", "GetPopular", 1, params)
 
 
+class ILobbyMatchmakingService(_SteamAPI):
+    """Provides access to the Steam Lobby methods."""
+    def __init__(self, key: str):
+        super().__init__(key)
 
+    def create_lobby(self,
+                     appid: int,
+                     max_members: int,
+                     lobby_type: int,
+                     steamid_invited_members: list,
+                     lobby_name: str = None,
+                     input_json: str = None,
+                     lobby_metadata: dict = None,
+                     ) -> dict:
+        """
+        Creates a new lobby.
+
+        :param appid: Application ID
+        :type appid: int
+        :param max_members: Maximum members
+        :type max_members: int
+        :param lobby_type: Lobby type
+        :type lobby_type: int
+        :param steamid_invited_members: List of Steam IDs to invite
+        :type steamid_invited_members: list
+        :param lobby_name: Lobby name
+        :type lobby_name: str
+        :param input_json: JSON input
+        :type input_json: str
+        :param lobby_metadata: Lobby metadata
+        :type lobby_metadata: dict
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "max_members": max_members,
+            "lobby_type": lobby_type,
+            "steamid_invited_members": steamid_invited_members,
+            "lobby_name": lobby_name,
+            "input_json": input_json,
+            "lobby_metadata": lobby_metadata
+        }
+
+        return self._post("ILobbyMatchmakingService", "CreateLobby", 1, params)
+
+    def remove_user_from_lobby(self,
+                               appid: int,
+                               steamid_to_remove: int,
+                               steamid_lobby: int,
+                               input_json: dict = None,
+                               ) -> dict:
+        """
+        Removes a user from a lobby.
+
+        :param appid: Application ID
+        :type appid: int
+        :param steamid_to_remove: Steam ID to remove
+        :type steamid_to_remove: int
+        :param steamid_lobby: Steam ID of the lobby
+        :type steamid_lobby: int
+        :param input_json: JSON input
+        :type input_json: dict
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "steamid_to_remove": steamid_to_remove,
+            "steamid_lobby": steamid_lobby,
+            "input_json": input_json
+        }
+
+        return self._post("ILobbyMatchmakingService", "RemoveUserFromLobby", 1, params)
+
+    def get_lobby_data(self,
+                       appid: int,
+                       steamid_lobby: int,
+                       ):
+        """
+        Gets the lobby data.
+
+        :param appid: Application ID
+        :type appid: int
+        :param steamid_lobby: Steam ID of the lobby
+        :type steamid_lobby: int
+        :return: Steam API response
+        """
+
+        params = {
+            "appid": appid,
+            "steamid_lobby": steamid_lobby
+        }
+
+        return self._get("ILobbyMatchmakingService", "GetLobbyData", 1, params)
