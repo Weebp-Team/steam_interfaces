@@ -9,7 +9,7 @@ from typing import List, Union
 
 class _SteamAPI(object):
     """Class for interacting with the Steam API."""
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: Union[str, None]) -> None:
         """
         :param key: Steam API key
         :type key: str
@@ -1210,4 +1210,17 @@ class ISteamGameServerStats(_SteamAPI):
         }
 
         return self._get("ISteamGameServerStats", "GetGameServerPlayerStatsForGame", 1, params)
+
+
+class ISteamWebAPIUtil(_SteamAPI):
+    def __init__(self):
+        super().__init__(None)
+
+    def get_server_info(self):
+        """ Gets the server info. """
+        return self._get("ISteamWebAPIUtil", "GetServerInfo", 1, {})
+
+    def get_supported_API_list(self):
+        """ Returns a list of all supported API methods. """
+        return self._get("ISteamWebAPIUtil", "GetSupportedAPIList", 1, {})
 

@@ -38,6 +38,7 @@ user_info = steam_user.get_player_summaries(76561198248393810)
 - ISteamNews
 - IWorkshopService
 - ISteamGameServerStats
+- ISteamWebAPIUtil
 
 ## Dependencies
 
