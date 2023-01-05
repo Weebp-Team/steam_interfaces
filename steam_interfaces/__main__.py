@@ -1450,7 +1450,7 @@ class ISiteLicenseService(_SteamAPI):
     """
     Provides access to services related
     to operating sites which are part of the
-    Steam PC Cafe program.
+    Steam PC Café program.
     """
     def __init__(self, key: str):
         super().__init__(key)
@@ -1495,3 +1495,53 @@ class ISiteLicenseService(_SteamAPI):
         }
 
         return self._get("ISiteLicenseService", "GetTotalPlaytime", 1, param)
+
+
+class ISteamCommunity(_SteamAPI):
+    """Provides restricted access to Steam Community features."""
+    def __init__(self, key: str):
+        super().__init__(key)
+
+    def report_abuse(self,
+                     steamidActor: int,
+                     steamidTarget: int,
+                     appid: int,
+                     abuseType: int,
+                     contentType: int,
+                     description: str,
+                     gid: int = None,
+                     ) -> dict:
+        """
+        Allows publishers to report users who are behaving badly on their community hub.
+
+        :param steamidActor: SteamID of user doing the reporting
+        :type steamidActor: int
+        :param steamidTarget: Steam ID of the user being reported
+        :type steamidTarget: int
+        :param appid: Application ID of the hub being reported
+        :type appid: int
+        :param abuseType: Type of abuse being reported
+        :type abuseType: int
+        :param contentType: Type of content being reported
+        :type contentType: int
+        :param description: Description of the abuse
+        :type description: str
+        :param gid: Group ID of the hub being reported
+        :type gid: int
+        :return: Steam API response
+        """
+
+        params = {
+            "steamidActor": steamidActor,
+            "steamidTarget": steamidTarget,
+            "appid": appid,
+            "abuseType": abuseType,
+            "contentType": contentType,
+            "description": description,
+            "gid": gid
+        }
+
+        return self._post("ISteamCommunity", "ReportAbuse", 1, params)
+
+
+
