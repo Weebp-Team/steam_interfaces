@@ -26,23 +26,24 @@ user_info = steam_user.get_player_summaries(76561198248393810)
 ``` 
 
 ## Supported interfaces
-- ISteamUser
 - IBroadcastService
 - ICheatReportingService
-- IDOTAChat_570
-- IDOTA2MatchStats_570
 - IDOTA2Fantasy_570
+- IDOTA2MatchStats_570
+- IDOTA2Match_570
 - IDOTA2StreamSystem_205790
-- IPlayerService
-- ISteamApps
-- ISteamNews
-- IWorkshopService
-- ISteamGameServerStats
-- ISteamWebAPIUtil
+- IDOTAChat_570
 - IEconMarketService
 - ILobbyMatchmakingService
+- IPlayerService
 - ISiteLicenseService
+- ISteamApps
 - ISteamCommunity
+- ISteamGameServerStats
+- ISteamNews
+- ISteamUser
+- ISteamWebAPIUtil
+- IWorkshopService
 
 ## Dependencies
 

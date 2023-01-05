@@ -7,7 +7,7 @@ from setuptools import setup
 :copyright: (c) 2022 Tarodictrl
 """
 
-version = '0.2.5'
+version = '0.2.6'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

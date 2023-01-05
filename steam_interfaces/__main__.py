@@ -38,7 +38,7 @@ class _SteamAPI(object):
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 403:
-            raise ValueError("Invalid API key")
+            raise ValueError("Invalid API key or access denied!")
 
     def _post(self, interface: str, method: str, version: int, params: dict) -> dict:
         """
@@ -1544,4 +1544,232 @@ class ISteamCommunity(_SteamAPI):
         return self._post("ISteamCommunity", "ReportAbuse", 1, params)
 
 
+class IDOTA2Match_570(_SteamAPI):
+    """Provides access to Dota 2 match data."""
+    def __init__(self, key: str):
+        super().__init__(key)
 
+    def get_live_league_games(self,
+                              league_id: int = None,
+                              match_id: int = None,
+                              dpc: bool = False,
+                              ) -> dict:
+        """
+        Returns a list of live league games.
+
+        :param league_id: Only show matches of the specified league id
+        :type league_id: int
+        :param match_id: Only show matches of the specified match id
+        :type match_id: int
+        :param dpc: Only show matches that are part of the DPC
+        :type dpc: bool
+        :return: Steam API response
+        """
+
+        params = {
+            "league_id": league_id,
+            "match_id": match_id,
+            "dpc": dpc
+        }
+
+        return self._get("IDOTA2Match_570", "GetLiveLeagueGames", 1, params)
+
+    def get_match_details(self,
+                          match_id: int,
+                          include_persona_names: bool = False,
+                          ) -> dict:
+        """
+        Returns match details.
+
+        :param match_id: Match ID
+        :type match_id: int
+        :param include_persona_names: Include persona names as part of the response
+        :type include_persona_names: bool
+        :return: Steam API response
+        """
+
+        params = {
+            "match_id": match_id,
+            "include_persona_names": include_persona_names
+        }
+
+        return self._get("IDOTA2Match_570", "GetMatchDetails", 1, params)
+
+    def get_match_history(self,
+                          hero_id: int = None,
+                          game_mode: int = None,
+                          skill: int = None,
+                          min_players: int = None,
+                          account_id: int = None,
+                          league_id: int = None,
+                          start_at_match_id: int = None,
+                          matches_requested: int = None,
+                          ) -> dict:
+        """
+        Returns match history.
+
+        :param hero_id: Only show matches with this hero ID
+        :type hero_id: int
+        :param game_mode: Only show matches with this game mode
+        :type game_mode: int
+        :param skill: Only show matches with this skill bracket
+        :type skill: int
+        :param min_players: Only show matches with this many players
+        :type min_players: int
+        :param account_id: Only show matches with this account ID
+        :type account_id: int
+        :param league_id: Only show matches with this league ID
+        :type league_id: int
+        :param start_at_match_id: Only show matches after this match ID
+        :type start_at_match_id: int
+        :param matches_requested: Only show this many matches
+        :type matches_requested: int
+        :return: Steam API response
+        """
+
+        params = {
+            "hero_id": hero_id,
+            "game_mode": game_mode,
+            "skill": skill,
+            "min_players": min_players,
+            "account_id": account_id,
+            "league_id": league_id,
+            "start_at_match_id": start_at_match_id,
+            "matches_requested": matches_requested,
+        }
+
+        return self._get("IDOTA2Match_570", "GetMatchHistory", 1, params)
+
+    def get_match_history_by_sequence_num(self,
+                                          start_at_match_seq_num: int,
+                                          matches_requested: int = None,
+                                          ) -> dict:
+        """
+        Returns match history.
+
+        :param start_at_match_seq_num: Start at this match sequence number
+        :type start_at_match_seq_num: int
+        :param matches_requested: Only show this many matches
+        :type matches_requested: int
+        :return: Steam API response
+        """
+
+        params = {
+            "start_at_match_seq_num": start_at_match_seq_num,
+            "matches_requested": matches_requested,
+        }
+
+        return self._get("IDOTA2Match_570", "GetMatchHistoryBySequenceNum", 1, params)
+
+    def get_team_info_by_team_ID(self,
+                                 start_at_team_id: int,
+                                 teams_requested: int = None,
+                                 ) -> dict:
+        """
+        Returns team info.
+
+        :param start_at_team_id: Start at this team ID
+        :type start_at_team_id: int
+        :param teams_requested: Only show this many teams
+        :type teams_requested: int
+        :return: Steam API response
+        """
+
+        params = {
+            "start_at_team_id": start_at_team_id,
+            "teams_requested": teams_requested,
+        }
+
+        return self._get("IDOTA2Match_570", "GetTeamInfoByTeamID", 1, params)
+
+    def get_top_live_event_game(self,
+                                partner: int
+                                ) -> dict:
+        """
+        Returns top live event game.
+
+        :param partner: Which partner's games to use.
+        :type partner: int
+        :return: Steam API response
+        """
+
+        params = {
+            "partner": partner
+        }
+
+        return self._get("IDOTA2Match_570", "GetTopLiveEventGame", 1, params)
+
+    def get_top_live_game(self,
+                          partner: int
+                          ) -> dict:
+        """
+        Returns top live game.
+
+        :param partner: Which partner's games to use.
+        :type partner: int
+        :return: Steam API response
+        """
+
+        params = {
+            "partner": partner
+        }
+
+        return self._get("IDOTA2Match_570", "GetTopLiveGame", 1, params)
+
+    def get_top_weekend_tourney_games(self,
+                                      partner: int,
+                                      home_division: int = None
+                                      ) -> dict:
+        """
+        Returns top weekend tourney games.
+
+        :param partner: Which partner's games to use.
+        :type partner: int
+        :param home_division: Which division to use.
+        :type home_division: int
+        :return: Steam API response
+        """
+
+        params = {
+            "partner": partner,
+            "home_division": home_division
+        }
+
+        return self._get("IDOTA2Match_570", "GetTopWeekendTourneyGames", 1, params)
+
+    def get_tournament_player_stats(self,
+                                    account_id: str,
+                                    league_id: str = None,
+                                    hero_id: str = None,
+                                    time_frame: str = None,
+                                    match_id: int = None,
+                                    phase_id: int = None,
+                                    ) -> dict:
+        """
+        Returns tournament player stats.
+
+        :param account_id: Account ID
+        :type account_id: str
+        :param league_id: League ID
+        :type league_id: str
+        :param hero_id: Hero ID
+        :type hero_id: str
+        :param time_frame: Time frame
+        :type time_frame: str
+        :param match_id: Match ID
+        :type match_id: int
+        :param phase_id: Phase ID
+        :type phase_id: int
+        :return: Steam API response
+        """
+
+        params = {
+            "account_id": account_id,
+            "league_id": league_id,
+            "hero_id": hero_id,
+            "time_frame": time_frame,
+            "match_id": match_id,
+            "phase_id": phase_id,
+        }
+
+        return self._get("IDOTA2Match_570", "GetTournamentPlayerStats", 2, params)
