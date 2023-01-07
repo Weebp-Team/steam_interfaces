@@ -4,10 +4,10 @@ from setuptools import setup
 """
 :authors: Tarodictrl
 :license: MIT License, see LICENSE file
-:copyright: (c) 2022 Tarodictrl
+:copyright: (c) 2023 Tarodictrl
 """
 
-version = '0.2.6'
+version = '0.2.7'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

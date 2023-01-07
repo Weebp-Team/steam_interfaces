@@ -26,24 +26,24 @@ user_info = steam_user.get_player_summaries(76561198248393810)
 ``` 
 
 ## Supported interfaces
-- IBroadcastService
-- ICheatReportingService
-- IDOTA2Fantasy_570
-- IDOTA2MatchStats_570
-- IDOTA2Match_570
-- IDOTA2StreamSystem_205790
-- IDOTAChat_570
-- IEconMarketService
-- ILobbyMatchmakingService
-- IPlayerService
-- ISiteLicenseService
-- ISteamApps
-- ISteamCommunity
-- ISteamGameServerStats
-- ISteamNews
-- ISteamUser
-- ISteamWebAPIUtil
-- IWorkshopService
+- [IBroadcastService](docs/IBroadcastService.md)
+- [ICheatReportingService](docs/ICheatReportingService.md)
+- [IDOTA2Fantasy_570](docs/IDOTA2Fantasy_570.md)
+- [IDOTA2MatchStats_570](docs/IDOTA2MatchStats_570.md)
+- [IDOTA2Match_570](docs/IDOTA2Match_570.md)
+- [IDOTA2StreamSystem_205790](docs/IDOTA2StreamSystem_205790.md)
+- [IDOTAChat_570](docs/IDOTAChat_570.md)
+- [IEconMarketService](docs/IEconMarketService.md)
+- [ILobbyMatchmakingService](docs/ILobbyMatchmakingService.md)
+- [IPlayerService](docs/IPlayerService.md)
+- [ISiteLicenseService](docs/ISiteLicenseService.md)
+- [ISteamApps](docs/ISteamApps.md)
+- [ISteamCommunity](docs/ISteamCommunity.md)
+- [ISteamGameServerStats](docs/ISteamGameServerStats.md)
+- [ISteamNews](docs/ISteamNews.md)
+- [ISteamUser](docs/ISteamUser.md)
+- [ISteamWebAPIUtil](docs/ISteamWebAPIUtil.md)
+- [IWorkshopService](docs/IWorkshopService.md)
 
 ## Dependencies
 

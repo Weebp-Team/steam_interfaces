@@ -1,7 +1,7 @@
 """
 :authors: Tarodictrl
 :license: MIT License, see LICENSE file
-:copyright: (c) 2022 Tarodictrl
+:copyright: (c) 2023 Tarodictrl
 """
 import requests
 from typing import List, Union
@@ -9,14 +9,16 @@ from typing import List, Union
 
 class _SteamAPI(object):
     """Class for interacting with the Steam API."""
+
     def __init__(self, key: Union[str, None]) -> None:
         """
         :param key: Steam API key
         :type key: str
         """
+        self._url = "https://partner.steam-api.com/{0}/{1}/v{2}/"
         self._key = key
 
-    def _get(self, interface: str, method: str, version: int, params: dict) -> dict:
+    def _get(self, host: str, interface: str, method: str, version: int, params: dict) -> dict:
         """
         Send a GET request to the Steam API.
 
@@ -31,8 +33,12 @@ class _SteamAPI(object):
         :return: Steam API response
         :rtype: dict
         """
-
-        url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
+        if host == "partner":
+            url = f"https://partner.steam-api.com/{interface}/{method}/v{version}/"
+        elif host == "steam":
+            url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
+        else:
+            raise ValueError("Invalid host!")
         params["key"] = self._key
         response = requests.get(url, params=params)
         if response.status_code == 200:
@@ -40,7 +46,7 @@ class _SteamAPI(object):
         elif response.status_code == 403:
             raise ValueError("Invalid API key or access denied!")
 
-    def _post(self, interface: str, method: str, version: int, params: dict) -> dict:
+    def _post(self, host: str, interface: str, method: str, version: int, params: dict) -> dict:
         """
         Send a POST request to the Steam API.
 
@@ -55,8 +61,12 @@ class _SteamAPI(object):
         :return: Steam API response
         :rtype: dict
         """
-
-        url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
+        if host == "partner":
+            url = f"https://partner.steam-api.com/{interface}/{method}/v{version}/"
+        elif host == "steam":
+            url = f"https://api.steampowered.com/{interface}/{method}/v{version}/"
+        else:
+            raise ValueError("Invalid host!")
         params["key"] = self._key
         response = requests.post(url, params=params)
         if response.status_code == 200:
@@ -95,7 +105,7 @@ class IBroadcastService(_SteamAPI):
             "framedata": frame_data
         }
 
-        return self._post("IBroadcastService", "PostGameDataFrame", 1, params)
+        return self._post("partner", "IBroadcastService", "PostGameDataFrame", 1, params)
 
 
 class ICheatReportingService(_SteamAPI):
@@ -106,65 +116,65 @@ class ICheatReportingService(_SteamAPI):
         super().__init__(key)
 
     def report_player_cheating(self,
-                               steam_id: int,
+                               steamid: int,
                                appid: int,
-                               steam_id_reporter: int,
-                               app_data: int,
+                               steamidreporter: int,
+                               appdata: int,
                                heuristic: bool = None,
                                detection: bool = None,
-                               player_report: bool = None,
-                               no_report_id: bool = None,
-                               game_mode: int = None,
-                               suspicion_start_time: int = None,
+                               playerreport: bool = None,
+                               noreportid: bool = None,
+                               gamemode: int = None,
+                               suspicionstarttime: int = None,
                                severity: int = None,
                                ) -> dict:
         """
         Report a player for cheating.
 
-        :param steam_id: Steam ID
-        :type steam_id: int
+        :param steamid: Steam ID
+        :type steamid: int
         :param appid: Application ID
         :type appid: int
-        :param steam_id_reporter: (Optional) The Steam ID of the user or game server who
+        :param steamidreporter: (Optional) The Steam ID of the user or game server who
         is reporting the cheating.
-        :type steam_id_reporter: int
-        :param app_data: (Optional) App specific data about the type of cheating set by developer.
+        :type steamidreporter: int
+        :param appdata: (Optional) App specific data about the type of cheating set by developer.
         (ex 1 = Aimbot, 2 = Wallhack, 3 = Griefing)
-        :type app_data: int
+        :type appdata: int
         :param heuristic: (Optional) Extra information about the source of the cheating - was it a heuristic.
         :type heuristic: bool
         :param detection: (Optional) Extra information about the source of the cheating - was it a heuristic.
         :type detection: bool
-        :param player_report: (Optional) Extra information about the source of the cheating - was it a player report.
-        :type player_report: bool
-        :param no_report_id: (Optional) Don't return reportid.
+        :param playerreport: (Optional) Extra information about the source of the cheating - was it a player report.
+        :type playerreport: bool
+        :param noreportid: (Optional) Don't return reportid.
         This should only be passed if you don't intend to issue a ban based on this report.
-        :type no_report_id: bool
-        :param game_mode: (Optional) Extra information about state of game - was it a specific
+        :type noreportid: bool
+        :param gamemode: (Optional) Extra information about state of game - was it a specific
         type of game play or game mode. (0 = generic).
-        :type game_mode: int
-        :param suspicion_start_time: (Optional) Extra information indicating how far back the game thinks
+        :type gamemode: int
+        :param suspicionstarttime: (Optional) Extra information indicating how far back the game thinks
         is interesting for this user. Unix epoch time (time since Jan 1st, 1970).
-        :type suspicion_start_time: int
+        :type suspicionstarttime: int
         :param severity: (Optional) Level of severity of bad action being reported. Scale set by developer.
         :type severity: int
         :return: Steam API response
         """
         params = {
-            "steamid": steam_id,
+            "steamid": steamid,
             "appid": appid,
-            "steamidreporter": steam_id_reporter,
-            "ap_data": app_data,
+            "steamidreporter": steamidreporter,
+            "ap_data": appdata,
             "heuristic": heuristic,
             "detection": detection,
-            "playerreport": player_report,
-            "noreportid": no_report_id,
-            "gamemode": game_mode,
-            "suspicionstarttime": suspicion_start_time,
+            "playerreport": playerreport,
+            "noreportid": noreportid,
+            "gamemode": gamemode,
+            "suspicionstarttime": suspicionstarttime,
             "severity": severity
         }
 
-        return self._post("ICheatReportingService", "ReportPlayerCheating", 1, params)
+        return self._post("partner", "ICheatReportingService", "ReportPlayerCheating", 1, params)
 
     def request_player_game_ban(self,
                                 steamid: int,
@@ -206,7 +216,7 @@ class ICheatReportingService(_SteamAPI):
             "flags": flags
         }
 
-        return self._post("ICheatReportingService", "RequestPlayerGameBan", 1, params)
+        return self._post("partner", "ICheatReportingService", "RequestPlayerGameBan", 1, params)
 
     def remove_player_game_ban(self,
                                steamid: int,
@@ -224,7 +234,7 @@ class ICheatReportingService(_SteamAPI):
             "steamid": steamid,
             "appid": appid
         }
-        return self._post("ICheatReportingService", "RemovePlayerGameBan", 1, params)
+        return self._post("partner", "ICheatReportingService", "RemovePlayerGameBan", 1, params)
 
     def get_cheating_reports(self,
                              appid: int,
@@ -264,7 +274,7 @@ class ICheatReportingService(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("ICheatReportingService", "GetCheatingReports", 1, params)
+        return self._get("partner", "ICheatReportingService", "GetCheatingReports", 1, params)
 
     def report_cheat_data(self,
                           steamid: int,
@@ -325,7 +335,7 @@ class ICheatReportingService(_SteamAPI):
             "cheat_param_2": cheat_param_2
         }
 
-        return self._post("ICheatReportingService", "ReportCheatData", 1, params)
+        return self._post("steam", "ICheatReportingService", "ReportCheatData", 1, params)
 
     def request_vac_status_for_user(self,
                                     steamid: int,
@@ -349,11 +359,12 @@ class ICheatReportingService(_SteamAPI):
             "session_id": session_id
         }
 
-        return self._post("ICheatReportingService", "RequestVacStatusForUser", 1, params)
+        return self._post("partner", "ICheatReportingService", "RequestVacStatusForUser", 1, params)
 
 
 class ISteamUser(_SteamAPI):
     """Used to access information and interact with users."""
+
     def __init__(self, key: str) -> None:
         super().__init__(key)
 
@@ -371,7 +382,7 @@ class ISteamUser(_SteamAPI):
         params = {
             "steamids": steam_ids
         }
-        return self._get("ISteamUser", "GetPlayerSummaries", 2, params)
+        return self._get("partner", "ISteamUser", "GetPlayerSummaries", 2, params)
 
     def check_app_ownership(self, steam_id: int, app_id: int) -> dict:
         """
@@ -389,7 +400,7 @@ class ISteamUser(_SteamAPI):
             "appid": app_id
         }
 
-        return self._get("ISteamUser", "CheckAppOwnership", 2, params)
+        return self._get("partner", "ISteamUser", "CheckAppOwnership", 2, params)
 
     def get_app_price_info(self,
                            steamid: int,
@@ -414,7 +425,7 @@ class ISteamUser(_SteamAPI):
             "appids": appids
         }
 
-        return self._get("ISteamUser", "GetAppPriceInfo", 1, params)
+        return self._get("partner", "ISteamUser", "GetAppPriceInfo", 1, params)
 
     def get_deleted_steam_ids(self,
                               rowversion: int,
@@ -432,7 +443,7 @@ class ISteamUser(_SteamAPI):
             "rowversion": rowversion
         }
 
-        return self._get("ISteamUser", "GetDeletedSteamIDs", 1, params)
+        return self._get("partner", "ISteamUser", "GetDeletedSteamIDs", 1, params)
 
     def get_friends_list(self,
                          steamid: int,
@@ -453,7 +464,7 @@ class ISteamUser(_SteamAPI):
             "relationship": relationship
         }
 
-        return self._get("ISteamUser", "GetFriendList", 1, params)
+        return self._get("partner", "ISteamUser", "GetFriendList", 1, params)
 
     def get_player_bans(self,
                         steam_ids: Union[List[int], int],
@@ -474,7 +485,7 @@ class ISteamUser(_SteamAPI):
             "steamids": steam_ids
         }
 
-        return self._get("ISteamUser", "GetPlayerBans", 1, params)
+        return self._get("partner", "ISteamUser", "GetPlayerBans", 1, params)
 
     def get_publisher_app_ownership(self,
                                     steamid: int) -> dict:
@@ -492,7 +503,7 @@ class ISteamUser(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("ISteamUser", "GetPublisherAppOwnership", 3, params)
+        return self._get("partner", "ISteamUser", "GetPublisherAppOwnership", 3, params)
 
     def get_publisher_app_ownership_changes(self,
                                             packagerowversion: str,
@@ -518,7 +529,7 @@ class ISteamUser(_SteamAPI):
             "cdkeyrowversion": cdkeyrowversion
         }
 
-        return self._get("ISteamUser", "GetPublisherAppOwnershipChanges", 1, params)
+        return self._get("partner", "ISteamUser", "GetPublisherAppOwnershipChanges", 1, params)
 
     def get_user_group_list(self,
                             steamid: int) -> dict:
@@ -534,7 +545,7 @@ class ISteamUser(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("ISteamUser", "GetUserGroupList", 1, params)
+        return self._get("partner", "ISteamUser", "GetUserGroupList", 1, params)
 
     def resolve_vanity_url(self,
                            vanityurl: str,
@@ -554,11 +565,12 @@ class ISteamUser(_SteamAPI):
             "url_type": url_type
         }
 
-        return self._get("ISteamUser", "ResolveVanityURL", 1, params)
+        return self._get("partner", "ISteamUser", "ResolveVanityURL", 1, params)
 
 
 class IDOTAChat_570(_SteamAPI):
     """Dota 2 Match chat API."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -581,11 +593,12 @@ class IDOTAChat_570(_SteamAPI):
             "channel_name": channel_name
         }
 
-        return self._get("IDOTAChat_570", "GetChannelMembers", 1, params)
+        return self._get("steam", "IDOTAChat_570", "GetChannelMembers", 1, params)
 
 
 class IDOTA2MatchStats_570(_SteamAPI):
     """Dota 2 Match Stats API."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -604,11 +617,12 @@ class IDOTA2MatchStats_570(_SteamAPI):
             "server_steam_id": server_steam_id
         }
 
-        return self._get("IDOTA2MatchStats_570", "GetMatchStats", 1, params)
+        return self._get("steam", "IDOTA2MatchStats_570", "GetMatchStats", 1, params)
 
 
 class IDOTA2Fantasy_570(_SteamAPI):
     """Dota 2 fantasy API."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -639,7 +653,7 @@ class IDOTA2Fantasy_570(_SteamAPI):
             "EndTime": EndTime
         }
 
-        return self._get("IDOTA2Fantasy_570", "GetFantasyPlayerRawStats", 1, params)
+        return self._get("steam", "IDOTA2Fantasy_570", "GetFantasyPlayerRawStats", 1, params)
 
     def get_player_info(self,
                         account_id: int,
@@ -656,7 +670,7 @@ class IDOTA2Fantasy_570(_SteamAPI):
             "account_id": account_id
         }
 
-        return self._get("IDOTA2Fantasy_570", "GetPlayerInfo", 1, params)
+        return self._get("steam", "IDOTA2Fantasy_570", "GetPlayerInfo", 1, params)
 
     def get_player_infos(self,
                          account_ids: Union[List[int], int],
@@ -677,11 +691,12 @@ class IDOTA2Fantasy_570(_SteamAPI):
             "account_ids": account_ids
         }
 
-        return self._get("IDOTA2Fantasy_570", "GetPlayerInfos", 1, params)
+        return self._get("steam", "IDOTA2Fantasy_570", "GetPlayerInfos", 1, params)
 
 
 class IDOTA2StreamSystem_205790(_SteamAPI):
     """Dota 2 Stream System API."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -689,7 +704,6 @@ class IDOTA2StreamSystem_205790(_SteamAPI):
                              broadcaster_steam_id: int,
                              league_id: int = None
                              ) -> dict:
-
         """
         Get broadcaster info.
 
@@ -705,11 +719,12 @@ class IDOTA2StreamSystem_205790(_SteamAPI):
             "league_id": league_id
         }
 
-        return self._get("IDOTA2StreamSystem_205790", "GetBroadcasterInfo", 1, params)
+        return self._get("steam", "IDOTA2StreamSystem_205790", "GetBroadcasterInfo", 1, params)
 
 
 class IPlayerService(_SteamAPI):
     """Provides additional methods for interacting with Steam Users."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -732,7 +747,7 @@ class IPlayerService(_SteamAPI):
             "count": count
         }
 
-        return self._get("IPlayerService", "GetRecentlyPlayedGames", 1, params)
+        return self._get("steam", "IPlayerService", "GetRecentlyPlayedGames", 1, params)
 
     def get_owned_games(self,
                         steamid: int,
@@ -766,7 +781,7 @@ class IPlayerService(_SteamAPI):
             "appids_filter": appids_filter
         }
 
-        return self._get("IPlayerService", "GetOwnedGames", 1, params)
+        return self._get("steam", "IPlayerService", "GetOwnedGames", 1, params)
 
     def get_steam_level(self,
                         steamid: int,
@@ -783,7 +798,7 @@ class IPlayerService(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("IPlayerService", "GetSteamLevel", 1, params)
+        return self._get("steam", "IPlayerService", "GetSteamLevel", 1, params)
 
     def get_badges(self,
                    steamid: int,
@@ -800,7 +815,7 @@ class IPlayerService(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("IPlayerService", "GetBadges", 1, params)
+        return self._get("steam", "IPlayerService", "GetBadges", 1, params)
 
     def get_community_badge_progress(self,
                                      steamid: int,
@@ -821,11 +836,12 @@ class IPlayerService(_SteamAPI):
             "badgeid": badgeid
         }
 
-        return self._get("IPlayerService", "GetCommunityBadgeProgress", 1, params)
+        return self._get("steam", "IPlayerService", "GetCommunityBadgeProgress", 1, params)
 
 
 class ISteamApps(_SteamAPI):
     """Used to access data about applications on Steam."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -843,7 +859,7 @@ class ISteamApps(_SteamAPI):
             "appid": appid
         }
 
-        return self._get("ISteamApps", "GetAppBeta", 1, params)
+        return self._get("partner", "ISteamApps", "GetAppBeta", 1, params)
 
     def get_app_builds(self,
                        appid: int,
@@ -864,7 +880,7 @@ class ISteamApps(_SteamAPI):
             "count": count
         }
 
-        return self._get("ISteamApps", "GetAppBuilds", 1, params)
+        return self._get("partner", "ISteamApps", "GetAppBuilds", 1, params)
 
     def get_app_depot_versions(self,
                                appid: int,
@@ -881,7 +897,7 @@ class ISteamApps(_SteamAPI):
             "appid": appid
         }
 
-        return self._get("ISteamApps", "GetAppDepotVersions", 1, params)
+        return self._get("partner", "ISteamApps", "GetAppDepotVersions", 1, params)
 
     def get_app_list(self) -> dict:
         """
@@ -890,7 +906,7 @@ class ISteamApps(_SteamAPI):
         :return: Steam API response
         """
 
-        return self._get("ISteamApps", "GetAppList", 1, {})
+        return self._get("steam", "ISteamApps", "GetAppList", 1, {})
 
     def get_partner_app_list_for_web_API_Key(self,
                                              type_filter: str = None,
@@ -907,7 +923,7 @@ class ISteamApps(_SteamAPI):
             "type_filter": type_filter
         }
 
-        return self._get("ISteamApps", "GetPartnerAppListForWebAPIKey", 1, params)
+        return self._get("partner", "ISteamApps", "GetPartnerAppListForWebAPIKey", 1, params)
 
     def get_players_banned(self,
                            appid: int) -> dict:
@@ -923,7 +939,7 @@ class ISteamApps(_SteamAPI):
             "appid": appid
         }
 
-        return self._get("ISteamApps", "GetPlayersBanned", 1, params)
+        return self._get("partner", "ISteamApps", "GetPlayersBanned", 1, params)
 
     def get_server_list(self,
                         filter: str = None,
@@ -944,7 +960,7 @@ class ISteamApps(_SteamAPI):
             "limit": limit
         }
 
-        return self._get("ISteamApps", "GetServersAtAddress", 1, params)
+        return self._get("partner", "ISteamApps", "GetServersAtAddress", 1, params)
 
     def get_servers_at_address(self,
                                addr: str,
@@ -961,7 +977,7 @@ class ISteamApps(_SteamAPI):
             "addr": addr
         }
 
-        return self._get("ISteamApps", "GetServersAtAddress", 1, params)
+        return self._get("steam", "ISteamApps", "GetServersAtAddress", 1, params)
 
     def set_app_build_live(self,
                            appid: int,
@@ -990,7 +1006,7 @@ class ISteamApps(_SteamAPI):
             "description": description
         }
 
-        return self._post("ISteamApps", "SetAppBuildLive", 1, params)
+        return self._post("partner", "ISteamApps", "SetAppBuildLive", 1, params)
 
     def up_to_date_check(self,
                          appid: int,
@@ -1011,21 +1027,22 @@ class ISteamApps(_SteamAPI):
             "version": version
         }
 
-        return self._get("ISteamApps", "UpToDateCheck", 1, params)
+        return self._get("steam", "ISteamApps", "UpToDateCheck", 1, params)
 
 
 class ISteamNews(_SteamAPI):
     """Provides access to the Steam News functionality. """
+
     def __init__(self, key: str):
-            super().__init__(key)
+        super().__init__(key)
 
     def get_news_for_app(self,
-                        appid: int,
-                        count: int = 20,
-                        maxlength: int = None,
-                        enddate: int = None,
-                        feeds: str = None,
-                        ) -> dict:
+                         appid: int,
+                         count: int = 20,
+                         maxlength: int = None,
+                         enddate: int = None,
+                         feeds: str = None,
+                         ) -> dict:
         """
         Gets news for an application.
 
@@ -1050,7 +1067,7 @@ class ISteamNews(_SteamAPI):
             "feeds": feeds
         }
 
-        return self._get("ISteamNews", "GetNewsForApp", 2, params)
+        return self._get("steam", "ISteamNews", "GetNewsForApp", 2, params)
 
     def get_news_from_app_authed(self,
                                  appid: int,
@@ -1084,11 +1101,12 @@ class ISteamNews(_SteamAPI):
             "feeds": feeds
         }
 
-        return self._get("ISteamNews", "GetNewsForApp", 2, params)
+        return self._get("partner", "ISteamNews", "GetNewsForApp", 2, params)
 
 
 class IWorkshopService(_SteamAPI):
     """Additional Steam Workshop service methods for publishers."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1127,7 +1145,7 @@ class IWorkshopService(_SteamAPI):
             "validate_only": validate_only
         }
 
-        return self._post("IWorkshopService", "SetItemPaymentRules", 1, params)
+        return self._post("partner", "IWorkshopService", "SetItemPaymentRules", 1, params)
 
     def get_finalized_contributors(self,
                                    appid: int,
@@ -1148,7 +1166,7 @@ class IWorkshopService(_SteamAPI):
             "gameitemid": gameitemid
         }
 
-        return self._get("IWorkshopService", "GetFinalizedContributors", 1, params)
+        return self._get("partner", "IWorkshopService", "GetFinalizedContributors", 1, params)
 
     def get_item_daily_revenue(self,
                                item_id: int,
@@ -1173,7 +1191,7 @@ class IWorkshopService(_SteamAPI):
             "date_end": date_end
         }
 
-        return self._get("IWorkshopService", "GetItemDailyRevenue", 1, params)
+        return self._get("partner", "IWorkshopService", "GetItemDailyRevenue", 1, params)
 
     def populate_item_descriptions(self,
                                    appid: int,
@@ -1194,11 +1212,12 @@ class IWorkshopService(_SteamAPI):
             "languages": languages
         }
 
-        return self._post("IWorkshopService", "PopulateItemDescriptions", 1, params)
+        return self._post("partner", "IWorkshopService", "PopulateItemDescriptions", 1, params)
 
 
 class ISteamGameServerStats(_SteamAPI):
     """Interface to get and interact with game server stats."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1233,7 +1252,7 @@ class ISteamGameServerStats(_SteamAPI):
             "maxresults": maxresults
         }
 
-        return self._get("ISteamGameServerStats", "GetGameServerPlayerStatsForGame", 1, params)
+        return self._get("partner", "ISteamGameServerStats", "GetGameServerPlayerStatsForGame", 1, params)
 
 
 class ISteamWebAPIUtil(_SteamAPI):
@@ -1242,11 +1261,11 @@ class ISteamWebAPIUtil(_SteamAPI):
 
     def get_server_info(self):
         """ Gets the server info. """
-        return self._get("ISteamWebAPIUtil", "GetServerInfo", 1, {})
+        return self._get("steam", "ISteamWebAPIUtil", "GetServerInfo", 1, {})
 
     def get_supported_API_list(self):
         """ Returns a list of all supported API methods. """
-        return self._get("ISteamWebAPIUtil", "GetSupportedAPIList", 1, {})
+        return self._get("steam", "ISteamWebAPIUtil", "GetSupportedAPIList", 1, {})
 
 
 class IEconMarketService(_SteamAPI):
@@ -1267,7 +1286,7 @@ class IEconMarketService(_SteamAPI):
             "steamid": steamid
         }
 
-        return self._get("IEconMarketService", "GetMarketEligibility", 1, params)
+        return self._get("partner", "IEconMarketService", "GetMarketEligibility", 1, params)
 
     def cancel_app_listings_for_user(self,
                                      appid: int,
@@ -1292,7 +1311,7 @@ class IEconMarketService(_SteamAPI):
             "synchronous": synchronous
         }
 
-        return self._post("IEconMarketService", "CancelAppListingsForUser", 1, params)
+        return self._post("partner", "IEconMarketService", "CancelAppListingsForUser", 1, params)
 
     def get_asset_ID(self,
                      appid: int,
@@ -1313,7 +1332,7 @@ class IEconMarketService(_SteamAPI):
             "listingid": listingid
         }
 
-        return self._get("IEconMarketService", "GetAssetID", 1, params)
+        return self._get("partner", "IEconMarketService", "GetAssetID", 1, params)
 
     def get_popular(self,
                     language: str,
@@ -1346,11 +1365,12 @@ class IEconMarketService(_SteamAPI):
             "rows": rows
         }
 
-        return self._get("IEconMarketService", "GetPopular", 1, params)
+        return self._get("partner", "IEconMarketService", "GetPopular", 1, params)
 
 
 class ILobbyMatchmakingService(_SteamAPI):
     """Provides access to the Steam Lobby methods."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1393,7 +1413,7 @@ class ILobbyMatchmakingService(_SteamAPI):
             "lobby_metadata": lobby_metadata
         }
 
-        return self._post("ILobbyMatchmakingService", "CreateLobby", 1, params)
+        return self._post("partner", "ILobbyMatchmakingService", "CreateLobby", 1, params)
 
     def remove_user_from_lobby(self,
                                appid: int,
@@ -1422,7 +1442,7 @@ class ILobbyMatchmakingService(_SteamAPI):
             "input_json": input_json
         }
 
-        return self._post("ILobbyMatchmakingService", "RemoveUserFromLobby", 1, params)
+        return self._post("partner", "ILobbyMatchmakingService", "RemoveUserFromLobby", 1, params)
 
     def get_lobby_data(self,
                        appid: int,
@@ -1443,7 +1463,7 @@ class ILobbyMatchmakingService(_SteamAPI):
             "steamid_lobby": steamid_lobby
         }
 
-        return self._get("ILobbyMatchmakingService", "GetLobbyData", 1, params)
+        return self._get("partner", "ILobbyMatchmakingService", "GetLobbyData", 1, params)
 
 
 class ISiteLicenseService(_SteamAPI):
@@ -1452,12 +1472,13 @@ class ISiteLicenseService(_SteamAPI):
     to operating sites which are part of the
     Steam PC Café program.
     """
+
     def __init__(self, key: str):
         super().__init__(key)
 
     def get_current_client_connections(self,
-                                    siteid: int = 0,
-                                    ):
+                                       siteid: int = 0,
+                                       ):
         """
         See current activity at one or more sites.
 
@@ -1470,12 +1491,12 @@ class ISiteLicenseService(_SteamAPI):
             "siteid": siteid
         }
 
-        return self._get("ISiteLicenseService", "GetCurrentClientConnections", 1, params)
+        return self._get("steam", "ISiteLicenseService", "GetCurrentClientConnections", 1, params)
 
     def get_total_playtime(self,
-                         start_time: str,
-                         end_time: str,
-                         siteid: int = 0):
+                           start_time: str,
+                           end_time: str,
+                           siteid: int = 0):
         """
         Get total playtime amounts for all games over a period of time; for one or all sites.
 
@@ -1494,11 +1515,12 @@ class ISiteLicenseService(_SteamAPI):
             "siteid": siteid
         }
 
-        return self._get("ISiteLicenseService", "GetTotalPlaytime", 1, param)
+        return self._get("steam", "ISiteLicenseService", "GetTotalPlaytime", 1, param)
 
 
 class ISteamCommunity(_SteamAPI):
     """Provides restricted access to Steam Community features."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1541,11 +1563,12 @@ class ISteamCommunity(_SteamAPI):
             "gid": gid
         }
 
-        return self._post("ISteamCommunity", "ReportAbuse", 1, params)
+        return self._post("steam", "ISteamCommunity", "ReportAbuse", 1, params)
 
 
 class IDOTA2Match_570(_SteamAPI):
     """Provides access to Dota 2 match data."""
+
     def __init__(self, key: str):
         super().__init__(key)
 
@@ -1572,7 +1595,7 @@ class IDOTA2Match_570(_SteamAPI):
             "dpc": dpc
         }
 
-        return self._get("IDOTA2Match_570", "GetLiveLeagueGames", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetLiveLeagueGames", 1, params)
 
     def get_match_details(self,
                           match_id: int,
@@ -1593,7 +1616,7 @@ class IDOTA2Match_570(_SteamAPI):
             "include_persona_names": include_persona_names
         }
 
-        return self._get("IDOTA2Match_570", "GetMatchDetails", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetMatchDetails", 1, params)
 
     def get_match_history(self,
                           hero_id: int = None,
@@ -1638,7 +1661,7 @@ class IDOTA2Match_570(_SteamAPI):
             "matches_requested": matches_requested,
         }
 
-        return self._get("IDOTA2Match_570", "GetMatchHistory", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetMatchHistory", 1, params)
 
     def get_match_history_by_sequence_num(self,
                                           start_at_match_seq_num: int,
@@ -1659,7 +1682,7 @@ class IDOTA2Match_570(_SteamAPI):
             "matches_requested": matches_requested,
         }
 
-        return self._get("IDOTA2Match_570", "GetMatchHistoryBySequenceNum", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetMatchHistoryBySequenceNum", 1, params)
 
     def get_team_info_by_team_ID(self,
                                  start_at_team_id: int,
@@ -1680,7 +1703,7 @@ class IDOTA2Match_570(_SteamAPI):
             "teams_requested": teams_requested,
         }
 
-        return self._get("IDOTA2Match_570", "GetTeamInfoByTeamID", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetTeamInfoByTeamID", 1, params)
 
     def get_top_live_event_game(self,
                                 partner: int
@@ -1697,7 +1720,7 @@ class IDOTA2Match_570(_SteamAPI):
             "partner": partner
         }
 
-        return self._get("IDOTA2Match_570", "GetTopLiveEventGame", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetTopLiveEventGame", 1, params)
 
     def get_top_live_game(self,
                           partner: int
@@ -1714,7 +1737,7 @@ class IDOTA2Match_570(_SteamAPI):
             "partner": partner
         }
 
-        return self._get("IDOTA2Match_570", "GetTopLiveGame", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetTopLiveGame", 1, params)
 
     def get_top_weekend_tourney_games(self,
                                       partner: int,
@@ -1735,7 +1758,7 @@ class IDOTA2Match_570(_SteamAPI):
             "home_division": home_division
         }
 
-        return self._get("IDOTA2Match_570", "GetTopWeekendTourneyGames", 1, params)
+        return self._get("steam", "IDOTA2Match_570", "GetTopWeekendTourneyGames", 1, params)
 
     def get_tournament_player_stats(self,
                                     account_id: str,
@@ -1772,4 +1795,4 @@ class IDOTA2Match_570(_SteamAPI):
             "phase_id": phase_id,
         }
 
-        return self._get("IDOTA2Match_570", "GetTournamentPlayerStats", 2, params)
+        return self._get("steam", "IDOTA2Match_570", "GetTournamentPlayerStats", 2, params)
